@@ -22,9 +22,17 @@ export default function Navbar() {
     <header className="w-full bg-black text-white">
       <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo / Brand */}
-        <Link href="/" className="text-xl font-bold">
-          Kingsmen FC
-        </Link>
+        <Link href="/" className="flex items-center gap-3">
+  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/15 ring-1 ring-white/25">
+    <img
+      src="/kingsmenlogo.jpeg"
+      alt="Kingsmen FC Logo"
+      className="w-7 h-7 object-contain"
+    />
+  </span>
+
+  <span className="text-xl font-bold">Kingsmen FC</span>
+</Link>
 
         {/* Desktop menu */}
         <div className="hidden md:flex gap-6">
