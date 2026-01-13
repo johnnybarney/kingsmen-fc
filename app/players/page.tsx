@@ -23,18 +23,18 @@ export default function PlayersPage() {
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-bold mb-6 text-center">
+      <h1 className="text-3xl font-bold mb-6 text-center text-white">
         Kingsmen FC Players
       </h1>
 
       {/* Search */}
       <input
-        type="text"
-        placeholder="Search player..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full sm:w-80 mb-6 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-      />
+  type="text"
+  placeholder="Search player..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="w-full sm:w-80 mb-6 px-4 py-2 rounded-lg bg-white/10 text-white placeholder:text-white/50 border border-white/15 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 mb-8">
@@ -43,10 +43,12 @@ export default function PlayersPage() {
             key={f}
             onClick={() => setActiveFilter(f)}
             className={
-              activeFilter === f
-                ? "bg-blue-600 text-white px-4 py-2 rounded-full"
-                : "bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300"
-            }
+  activeFilter === f
+    ? "bg-blue-600 text-white px-4 py-2 rounded-full"
+    : "bg-white text-gray-900 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+}
+
+
           >
             {f}
           </button>
