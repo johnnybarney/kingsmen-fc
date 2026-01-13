@@ -39,7 +39,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-4">
                 <img
-                  src="/logo.png"
+                  src="/kingsmenlogo.jpeg"
                   alt="Kingsmen FC Logo"
                   className="w-16 h-16 object-contain"
                 />
