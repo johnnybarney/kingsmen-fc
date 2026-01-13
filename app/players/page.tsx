@@ -2,93 +2,167 @@
 
 import Link from "next/link";
 import { players } from "./playersData";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-const filters = ["ALL", "GK", "DEF", "MID", "FWD"] as const;
+type PositionCode = "GK" | "DEF" | "MID" | "FWD" | "ALL";
 
-export default function PlayersPage() {
-  const [activeFilter, setActiveFilter] = useState<typeof filters[number]>("ALL");
-  const [search, setSearch] = useState("");
+const positionLabels: Record<Exclude<PositionCode, "ALL">, string> = {
+  GK: "Goalkeepers",
+  DEF: "Defenders",
+  MID: "Midfielders",
+  FWD: "Forwards",
+};
 
-  const filteredPlayers = players.filter((player) => {
-    const matchesFilter =
-      activeFilter === "ALL" || player.positionCode === activeFilter;
+const pills: PositionCode[] = ["ALL", "GK", "DEF", "MID", "FWD"];
 
-    const matchesSearch = player.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-
-    return matchesFilter && matchesSearch;
-  });
-
+function PlayerCard({ slug, name, position, number, image }: any) {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-bold mb-6 text-center text-white">
-        Kingsmen FC Players
-      </h1>
+    <Link
+      href={`/players/${slug}`}
+      className="group block overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 hover:shadow-lg transition"
+    >
+      <div className="relative">
+        <img
+          src={image}
+          alt={name}
+          onError={(e) => {
+            e.currentTarget.src = "/players/placeholder.png";
+          }}
+          className="h-56 w-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+        />
 
-      {/* Search */}
-      <input
-  type="text"
-  placeholder="Search player..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  className="w-full sm:w-80 mb-6 px-4 py-2 rounded-lg bg-white/10 text-white placeholder:text-white/50 border border-white/15 focus:outline-none focus:ring-2 focus:ring-blue-500"
-/>
+        <div className="absolute left-3 top-3 rounded-full bg-black/80 px-3 py-1 text-sm font-semibold text-white">
+          #{number}
+        </div>
+      </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {filters.map((f) => (
-          <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={
-  activeFilter === f
-    ? "bg-blue-600 text-white px-4 py-2 rounded-full"
-    : "bg-white text-gray-900 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+      <div className="p-4">
+        <p className="text-xs uppercase tracking-wide text-gray-500">
+          {position}
+        </p>
+        <h3 className="mt-1 text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+          {name}
+        </h3>
+      </div>
+    </Link>
+  );
 }
 
+export default function PlayersPage() {
+  const [active, setActive] = useState<PositionCode>("ALL");
+  const [search, setSearch] = useState("");
 
-          >
-            {f}
-          </button>
-        ))}
+  const filtered = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return players.filter((p) => {
+      const matchesSearch = !s || p.name.toLowerCase().includes(s);
+      const matchesPos = active === "ALL" || p.positionCode === active;
+      return matchesSearch && matchesPos;
+    });
+  }, [active, search]);
+
+  const grouped = useMemo(() => {
+    const groups: Record<Exclude<PositionCode, "ALL">, typeof players> = {
+      GK: [],
+      DEF: [],
+      MID: [],
+      FWD: [],
+    };
+    filtered.forEach((p) => {
+      groups[p.positionCode].push(p);
+    });
+    return groups;
+  }, [filtered]);
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 py-14">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
+          Players
+        </h1>
+        <p className="mt-2 text-gray-600 max-w-2xl">
+          Meet the Kingsmen FC squad. Search or filter by position, then tap a
+          player to view their profile.
+        </p>
       </div>
 
-      {/* Players grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-        {filteredPlayers.map((player) => (
-          <Link
-            key={player.slug}
-            href={`/players/${player.slug}`}
-            className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden"
-          >
-            <img
-              src={player.image}
-              alt={player.name}
-              onError={(e) => {
-                e.currentTarget.src = "/players/placeholder.png";
-              }}
-              className="w-full h-56 object-cover group-hover:scale-105 transition-transform"
-            />
+      {/* Controls */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-10">
+        {/* Search */}
+        <input
+          type="text"
+          placeholder="Search player..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-96 px-4 py-2 rounded-xl bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-            <div className="p-4 text-center">
-              <p className="text-xs text-gray-500">
-                #{player.number} · {player.position}
-              </p>
-              <h2 className="text-lg font-semibold mt-1">
-                {player.name}
-              </h2>
+        {/* Pills */}
+        <div className="flex flex-wrap gap-2">
+          {pills.map((p) => (
+            <button
+              key={p}
+              onClick={() => setActive(p)}
+              className={
+                active === p
+                  ? "px-4 py-2 rounded-full bg-blue-600 text-white font-semibold"
+                  : "px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-800 hover:bg-gray-50 transition"
+              }
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* If ALL: show sections like Man City */}
+      {active === "ALL" ? (
+        <div className="space-y-12">
+          {(["GK", "DEF", "MID", "FWD"] as const).map((code) => (
+            <div key={code}>
+              <div className="flex items-end justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {positionLabels[code]}
+                </h2>
+                <span className="text-sm text-gray-500">
+                  {grouped[code].length} players
+                </span>
+              </div>
+
+              {grouped[code].length === 0 ? (
+                <p className="text-gray-500">No players in this position yet.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                  {grouped[code].map((player) => (
+                    <PlayerCard key={player.slug} {...player} />
+                  ))}
+                </div>
+              )}
             </div>
-          </Link>
-        ))}
+          ))}
+        </div>
+      ) : (
+        // If filtered to a position: show one grid
+        <div>
+          <div className="flex items-end justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {active === "ALL" ? "All Players" : positionLabels[active]}
+            </h2>
+            <span className="text-sm text-gray-500">{filtered.length} players</span>
+          </div>
 
-        {filteredPlayers.length === 0 && (
-          <p className="col-span-full text-center text-gray-500">
-            No players found.
-          </p>
-        )}
-      </div>
+          {filtered.length === 0 ? (
+            <p className="text-gray-500">No players found.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              {filtered.map((player) => (
+                <PlayerCard key={player.slug} {...player} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }
