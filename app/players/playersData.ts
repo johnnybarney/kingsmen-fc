@@ -13,14 +13,14 @@ export type Player = {
 
 export const players: Player[] = [
   {
-    slug: "john-smith",
-    name: "John Smith",
+    slug: "jasri",
+    name: "Jasri",
     position: "Forward",
     positionCode: "FWD",
     number: 9,
-    image: "/players/test1.jpeg",
+    image: "/players/jasri.jpeg",
     age: 24,
-    nationality: "England",
+    nationality: "Malaysian",
   },
   {
     slug: "david-lee",
