@@ -1,21 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { players } from "./playersData";
+import { players, type Player, type PositionCode } from "./playersData";
 import { useMemo, useState } from "react";
 
-type PositionCode = "GK" | "DEF" | "MID" | "FWD" | "ALL";
+type Filter = PositionCode | "ALL";
 
-const positionLabels: Record<Exclude<PositionCode, "ALL">, string> = {
+const positionLabels: Record<PositionCode, string> = {
   GK: "Goalkeepers",
   DEF: "Defenders",
   MID: "Midfielders",
   FWD: "Forwards",
 };
 
-const pills: PositionCode[] = ["ALL", "GK", "DEF", "MID", "FWD"];
+const pills: Filter[] = ["ALL", "GK", "DEF", "MID", "FWD"];
 
-function PlayerCard({ slug, name, position, number, image }: any) {
+function PlayerCard({
+  slug,
+  name,
+  position,
+  number,
+  image,
+}: Pick<Player, "slug" | "name" | "position" | "number" | "image">) {
   return (
     <Link
       href={`/players/${slug}`}
@@ -49,11 +55,12 @@ function PlayerCard({ slug, name, position, number, image }: any) {
 }
 
 export default function PlayersPage() {
-  const [active, setActive] = useState<PositionCode>("ALL");
+  const [active, setActive] = useState<Filter>("ALL");
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
+
     return players.filter((p) => {
       const matchesSearch = !s || p.name.toLowerCase().includes(s);
       const matchesPos = active === "ALL" || p.positionCode === active;
@@ -62,15 +69,17 @@ export default function PlayersPage() {
   }, [active, search]);
 
   const grouped = useMemo(() => {
-    const groups: Record<Exclude<PositionCode, "ALL">, typeof players> = {
+    const groups: Record<PositionCode, Player[]> = {
       GK: [],
       DEF: [],
       MID: [],
       FWD: [],
     };
+
     filtered.forEach((p) => {
       groups[p.positionCode].push(p);
     });
+
     return groups;
   }, [filtered]);
 
@@ -116,10 +125,10 @@ export default function PlayersPage() {
         </div>
       </div>
 
-      {/* If ALL: show sections like Man City */}
+      {/* If ALL: show sections */}
       {active === "ALL" ? (
         <div className="space-y-12">
-          {(["GK", "DEF", "MID", "FWD"] as const).map((code) => (
+          {(Object.keys(positionLabels) as PositionCode[]).map((code) => (
             <div key={code}>
               <div className="flex items-end justify-between mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">
@@ -143,13 +152,17 @@ export default function PlayersPage() {
           ))}
         </div>
       ) : (
-        // If filtered to a position: show one grid
+        // If filtered to a position
         <div>
           <div className="flex items-end justify-between mb-4">
             <h2 className="text-2xl font-bold text-gray-900">
-              {active === "ALL" ? "All Players" : positionLabels[active]}
+              {active === "ALL"
+                ? "All Players"
+                : positionLabels[active]}
             </h2>
-            <span className="text-sm text-gray-500">{filtered.length} players</span>
+            <span className="text-sm text-gray-500">
+              {filtered.length} players
+            </span>
           </div>
 
           {filtered.length === 0 ? (

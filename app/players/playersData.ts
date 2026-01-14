@@ -1,8 +1,10 @@
+export type PositionCode = "GK" | "DEF" | "MID" | "FWD";
+
 export type Player = {
   slug: string;
   name: string;
   position: string;
-  positionCode: "GK" | "DEF" | "MID" | "FWD";
+  positionCode: PositionCode; // ✅ add this
   number: number;
   image: string;
   age: number;
