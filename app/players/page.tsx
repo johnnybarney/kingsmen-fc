@@ -125,7 +125,7 @@ export default function PlayersPage() {
         </div>
       </div>
 
-      {/* If ALL: show sections */}
+      {/* ALL view: show sections */}
       {active === "ALL" ? (
         <div className="space-y-12">
           {(Object.keys(positionLabels) as PositionCode[]).map((code) => (
@@ -152,29 +152,33 @@ export default function PlayersPage() {
           ))}
         </div>
       ) : (
-        // If filtered to a position
-        <div>
-          <div className="flex items-end justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {active === "ALL"
-                ? "All Players"
-                : positionLabels[active]}
-            </h2>
-            <span className="text-sm text-gray-500">
-              {filtered.length} players
-            </span>
-          </div>
+        // Position view: active is guaranteed to be PositionCode (NOT "ALL")
+        (() => {
+          const activePos = active as PositionCode;
 
-          {filtered.length === 0 ? (
-            <p className="text-gray-500">No players found.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-              {filtered.map((player) => (
-                <PlayerCard key={player.slug} {...player} />
-              ))}
+          return (
+            <div>
+              <div className="flex items-end justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {positionLabels[activePos]}
+                </h2>
+                <span className="text-sm text-gray-500">
+                  {filtered.length} players
+                </span>
+              </div>
+
+              {filtered.length === 0 ? (
+                <p className="text-gray-500">No players found.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                  {filtered.map((player) => (
+                    <PlayerCard key={player.slug} {...player} />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          );
+        })()
       )}
     </section>
   );
