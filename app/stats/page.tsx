@@ -105,14 +105,6 @@ export default function TeamStatsPage() {
         <StatCard label="Losses" value={losses} />
         <StatCard label="Goals Scored" value={goalsFor} />
       </div>
-
-      <div className="mt-10 rounded-2xl bg-gray-50 border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900">How to update stats</h2>
-        <p className="mt-2 text-gray-600">
-          Go to Matches Data and add a <b>score</b> for completed games (example:
-          <b> “2 - 1”</b>). The stats page will update automatically.
-        </p>
-      </div>
     </section>
   );
 }

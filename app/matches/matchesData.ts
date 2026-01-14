@@ -9,21 +9,29 @@ export type Match = {
 };
 
 export const matches: Match[] = [
-  {
-    id: "2026-02-10-red-lions",
-    date: "2026-02-10",
-    opponent: "Red Lions FC",
-    competition: "League Match",
+   {
+    id: "2026-01-30-TBC",
+    date: "2026-01-30",
+    opponent: "TBC",
+    competition: "Friendly",
     venue: "Home",
     notes: "Big match at home. Arrive early.",
   },
   {
-    id: "2026-02-03-blue-tigers",
-    date: "2026-02-03",
-    opponent: "Blue Tigers FC",
+    id: "2026-01-19-Cendana-FC",
+    date: "2026-01-19",
+    opponent: "Cendana FC",
     competition: "Friendly",
-    venue: "Away",
-    score: "2 - 1",
+    venue: "Home",
+    notes: "Big match at home. Arrive early.",
+  },
+  {
+    id: "2026-01-09-Team-Irfan",
+    date: "2026-01-09",
+    opponent: "Team Irfan",
+    competition: "Friendly",
+    venue: "Home",
+    score: "1 - 0",
     notes: "Great win. Strong second half.",
   },
 ];
