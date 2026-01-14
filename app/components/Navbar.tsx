@@ -8,11 +8,9 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/players", label: "Players" },
-  { href: "/formation", label: "Formation" },
   { href: "/matches", label: "Matches" },
   { href: "/stats", label: "Stats" },
   { href: "/contact", label: "Contact" },
-  { href: "/admin", label: "Admin" },
 ];
 
 export default function Navbar() {
