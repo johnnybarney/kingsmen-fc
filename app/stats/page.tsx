@@ -1,14 +1,6 @@
 import Link from "next/link";
 import { players } from "../players/playersData";
-
-type TeamStats = {
-  matchesPlayed: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-};
+import { matches } from "../matches/matchesData";
 
 function StatCard({
   label,
@@ -28,18 +20,46 @@ function StatCard({
   );
 }
 
-export default function TeamStatsPage() {
-  // ✅ For now: simple “manual stats” (we’ll connect to matches later)
-  const stats: TeamStats = {
-    matchesPlayed: 12,
-    wins: 7,
-    draws: 2,
-    losses: 3,
-    goalsFor: 21,
-    goalsAgainst: 14,
-  };
+function parseScore(score: string): { gf: number; ga: number } | null {
+  // Supports: "2-1", "2 - 1", "2:1"
+  const cleaned = score.replace(/\s+/g, "");
+  const parts = cleaned.split(/[-:]/);
 
-  const goalDifference = stats.goalsFor - stats.goalsAgainst;
+  if (parts.length !== 2) return null;
+
+  const gf = Number(parts[0]);
+  const ga = Number(parts[1]);
+
+  if (Number.isNaN(gf) || Number.isNaN(ga)) return null;
+  return { gf, ga };
+}
+
+export default function TeamStatsPage() {
+  const results = matches.filter((m) => m.score);
+
+  let played = 0;
+  let wins = 0;
+  let draws = 0;
+  let losses = 0;
+  let goalsFor = 0;
+  let goalsAgainst = 0;
+
+  results.forEach((m) => {
+    if (!m.score) return;
+
+    const parsed = parseScore(m.score);
+    if (!parsed) return;
+
+    played += 1;
+    goalsFor += parsed.gf;
+    goalsAgainst += parsed.ga;
+
+    if (parsed.gf > parsed.ga) wins += 1;
+    else if (parsed.gf === parsed.ga) draws += 1;
+    else losses += 1;
+  });
+
+  const goalDifference = goalsFor - goalsAgainst;
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-14">
@@ -49,7 +69,7 @@ export default function TeamStatsPage() {
             Team Stats
           </h1>
           <p className="mt-2 text-gray-600 max-w-2xl">
-            Quick overview of Kingsmen FC performance this season.
+            Automatically calculated from your Results matches.
           </p>
         </div>
 
@@ -69,30 +89,28 @@ export default function TeamStatsPage() {
         </div>
       </div>
 
-      {/* Top highlight row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
         <StatCard label="Players" value={players.length} hint="Current squad" />
-        <StatCard label="Matches" value={stats.matchesPlayed} hint="Played" />
-        <StatCard label="Wins" value={stats.wins} hint="This season" />
+        <StatCard label="Matches Played" value={played} hint="Results only" />
+        <StatCard label="Wins" value={wins} hint="From results" />
         <StatCard
           label="Goal Difference"
           value={goalDifference >= 0 ? `+${goalDifference}` : `${goalDifference}`}
-          hint={`${stats.goalsFor} scored · ${stats.goalsAgainst} conceded`}
+          hint={`${goalsFor} scored · ${goalsAgainst} conceded`}
         />
       </div>
 
-      {/* Detailed row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <StatCard label="Draws" value={stats.draws} />
-        <StatCard label="Losses" value={stats.losses} />
-        <StatCard label="Goals Scored" value={stats.goalsFor} />
+        <StatCard label="Draws" value={draws} />
+        <StatCard label="Losses" value={losses} />
+        <StatCard label="Goals Scored" value={goalsFor} />
       </div>
 
       <div className="mt-10 rounded-2xl bg-gray-50 border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900">Next step</h2>
+        <h2 className="text-xl font-bold text-gray-900">How to update stats</h2>
         <p className="mt-2 text-gray-600">
-          Later, we’ll calculate these stats automatically from your Matches page
-          data (so you never manually update numbers).
+          Go to Matches Data and add a <b>score</b> for completed games (example:
+          <b> “2 - 1”</b>). The stats page will update automatically.
         </p>
       </div>
     </section>
